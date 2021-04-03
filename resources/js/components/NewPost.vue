@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white rounded shadow w-11/12 x-1 sm:w-2/3 p-4 ">
+    <div class="bg-white rounded shadow w-11/12 sm:w-2/3 p-4 ">
         <div class="flex justify-between items-center">
             <div>
                 <div class="w-8">
@@ -8,8 +8,16 @@
                     </router-link>
                 </div>
             </div>
-            <div class="flex-1 mx-4">
-                <input type="text" name="body" class="w-full pl-4 h-8 bg-gray-200 rounded-full focus:outline-none focus:shadow-outline text-sm" placeholder="Add a post">
+            <div class="flex-1 flex mx-4">
+                <input v-model="postMessage" type="text" name="body" class="w-full pl-4 h-8 bg-gray-200 rounded-full focus:outline-none focus:shadow-outline text-sm" placeholder="Add a post">
+                 <transition name="fade">
+                    <button 
+                        @click="$store.dispatch('postMessage')" 
+                        class="bg-gray-200 ml-2 px-2 py-1 rounded-lg"
+                        v-if="postMessage">
+                            Post
+                    </button>
+                 </transition>
             </div>
             <div>
                 <button class="flex justify-center items-center rounded-full w-10 h-10 bg-gray-200">
@@ -24,11 +32,26 @@
     export default {
         name: "NewPost",
         computed: {
-            authUser() { return this.$store.getters.authUser; } 
+            authUser() { return this.$store.getters.authUser; },
+            
+            postMessage: {
+                get() {
+                    return this.$store.getters.postMessage;
+                },
+                set(postMessage) {
+                    this.$store.commit('updateMessage', postMessage)
+                },
+            }
+            
         }
     }
 </script>
 
 <style scoped>
-
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s;
+    }
+    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        opacity: 0;
+    }
 </style>

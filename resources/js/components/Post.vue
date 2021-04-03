@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white rounded shadow w-2/3 mt-6 overflow-hidden">
+    <div class="bg-white rounded shadow w-11/12 sm:w-2/3 mt-6 overflow-hidden">
         <div class="flex flex-col p-4">
             <div class="flex items-center">
                 <div class="w-8">
@@ -14,8 +14,7 @@
                 <p>{{ post.data.attributes.body }}</p>
             </div>
         </div>
-
-        <div v-if="post.data.attributes.image" class="w-full">
+        <div v-if="post.data.attributes.image.length" class="w-full">
             <img :src="post.data.attributes.image">
         </div>
 

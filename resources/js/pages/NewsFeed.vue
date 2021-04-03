@@ -3,7 +3,7 @@
         
         <NewPost />
 
-        <p v-if="loading">Loading Posts...</p>
+        <p v-if="newsStatus.postsStatus === 'loading'">Loading Posts...</p>
         <Post v-else v-for="post in posts.data" :post="post" :key="post.data.post_id" />
 
     </div>
@@ -22,24 +22,14 @@
             Post,
         },
 
-        data() {
-            return {
-                loading: true,
-                posts: null,
-            }
+        computed: {
+            posts() { return this.$store.getters.newsPosts; },
+            newsStatus() { return this.$store.getters.newsStatus; }
         },
 
         mounted() {
-
-            axios.get('/api/posts')
-                .then(res => {
-                    this.posts = res.data;
-                    this.loading = false;
-                })
-                .catch( err => {
-                    console.log('Unable to fetch posts');
-                    console.log(err);
-            });
+            this.$store.dispatch('fetchNewsPosts')
+            
         }
     }
 </script>

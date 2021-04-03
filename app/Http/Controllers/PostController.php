@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Friend;
 use App\Http\Resources\PostCollection;
+use App\Http\Resources\PostResource;
 
 class PostController extends Controller
 {
@@ -28,10 +29,10 @@ class PostController extends Controller
     public function store()
     {
         $data = request()->validate([
-            'data.attributes.body' => '',
+            'body' => '',
         ]);
 
-        $post = request()->user()->posts()->create($data['data']['attributes']);
+        $post = request()->user()->posts()->create($data);
         
         return new PostResource($post);
     }
