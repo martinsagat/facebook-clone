@@ -1,5 +1,6 @@
 <template>
     <div class="flex flex-col items-center py-4">
+        
         <NewPost />
 
         <p v-if="loading">Loading Posts...</p>
@@ -9,7 +10,7 @@
 </template>
 
 <script>
-    import NewPost 
+    import NewPost
     from '../components/NewPost';
     import Post from '../components/Post';
 

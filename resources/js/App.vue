@@ -1,12 +1,13 @@
 <template>
-    <div class="flex flex-col flex-1 h-screen overflow-y-hidden">
+    <div class="flex flex-col flex-1 h-screen overflow-y-hidden" v-if="authUser">
         <Nav />
 
         <div class="flex overflow-y-hidden flex-1">
-            <Sidebar />
 
-            <div class="overflow-x-hidden w-2/3">
-                <router-view></router-view>
+            <Sidebar class="hidden sm:block" />
+
+            <div class="overflow-x-hidden w-full sm:w-2/3">
+                <router-view :key="$route.fullPath"></router-view>
             </div>
         </div>
     </div>
@@ -28,6 +29,10 @@
             $route(to, from) { 
                 this.$store.dispatch('setPageTitle', to.meta.title)
             }
+        },
+
+        computed: {
+            authUser() { return this.$store.getters.authUser; }
         },
 
         mounted() {

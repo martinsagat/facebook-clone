@@ -1,9 +1,11 @@
 <template>
-    <div class="bg-white rounded shadow w-2/3 p-4 ">
+    <div class="bg-white rounded shadow w-11/12 x-1 sm:w-2/3 p-4 ">
         <div class="flex justify-between items-center">
             <div>
                 <div class="w-8">
+                    <router-link :to="'/users/' + authUser.data.user_id">
                     <img src="https://cdn.pixabay.com/photo/2014/07/09/10/04/man-388104_960_720.jpg" alt="profile image for user" class="w-8 h-8 object-cover rounded-full">
+                    </router-link>
                 </div>
             </div>
             <div class="flex-1 mx-4">
@@ -20,7 +22,10 @@
 
 <script>
     export default {
-        name: "NewPost"
+        name: "NewPost",
+        computed: {
+            authUser() { return this.$store.getters.authUser; } 
+        }
     }
 </script>
 

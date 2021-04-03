@@ -15,12 +15,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/auth-user', [AuthUserController::class, 'show']);
 
     Route::apiResources([
+
         '/posts' => PostController::class,
         '/users' => UserController::class,
-        '/users/{user}/posts' => UserPostController::class,
+        '/users/{user}/posts' => PostController::class,
         '/friend-request' => FriendRequestController::class,
         '/friend-request-response' => FriendRequestResponseController::class,
-    
-    
+
     ]);
 });

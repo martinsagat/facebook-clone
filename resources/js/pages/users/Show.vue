@@ -1,5 +1,5 @@
 <template>
-<div class="flex flex-col items-center">
+<div class="flex flex-col items-center" v-if="status.user === 'success' && user">
     <div class="relative mb-8">
         <div class="w-100 h-64 overflow-hidden z-10">
             <img src="https://upload.wikimedia.org/wikipedia/commons/7/7f/Zugspitze_-_June_2018_-_31911455517.jpg" alt="User Background Image" class="object-cover w-full"/>
@@ -12,13 +12,29 @@
         
             <p class="text-2xl text-gray-100 ml-4">{{ user.data.attributes.name }}</p>
         </div>
+
+        <div class="absolute flex items-center bottom-0 right-0 mb-4 mr-12 z-20">
+            <button v-if="friendButtonText && friendButtonText !== 'Accept'"
+                    class="py-1 px-3 bg-gray-400 rounded"
+                    @click="$store.dispatch('sendFriendRequest', $route.params.userId)">
+                {{ friendButtonText }}
+            </button>
+            <button v-if="friendButtonText && friendButtonText === 'Accept'"
+                    class="mr-2 py-1 px-3 bg-blue-500 rounded"
+                    @click="$store.dispatch('acceptFriendRequest', $route.params.userId)">
+                Accept
+            </button>
+            <button v-if="friendButtonText && friendButtonText === 'Accept'"
+                    class="py-1 px-3 bg-gray-400 rounded"
+                    @click="$store.dispatch('ignoreFriendRequest', $route.params.userId)">
+                Ignore
+            </button>
+        </div>
     </div>
 
-    <p v-if="postLoading">Loading Posts...</p>
-    
+    <div v-if="status.posts === 'loading'">Loading Posts...</div>
+    <div v-else-if="posts.data.length < 1">No posts found. Get Started..</div>
     <Post v-else v-for="post in posts.data" :post="post" :key="post.data.post_id" />
-
-    <p v-if="! postLoading && posts.data.length < 1">No posts found. Get Started..</p>
 
 </div>
 </template>
@@ -31,43 +47,18 @@ export default {
     components: {
         Post
     },
-    data() {
-        return {
-            userLoading: true,
-            postLoading: true,
-            user: null,
-            posts: null,
-        }
+
+    computed: {
+        user() { return this.$store.getters.user; },
+        posts() { return this.$store.getters.posts; },
+        status() { return this.$store.getters.status; },
+        friendButtonText() { return this.$store.getters.friendButtonText; }
     },
 
     mounted() {
-        axios.get('/api/users/'+ this.$route.params.userId)
-            .then(res => {
-                this.user = res.data;
-            })
-            .catch(err => {
 
-                console.log('Unable to fetch the user from the server.')
-                console.log(err)
-            
-            })
-            .finally(() => {
-                this.userLoading = false
-            })
-
-        axios.get('/api/users/'+ this.$route.params.userId + '/posts')
-            .then(res => {
-                this.posts = res.data;
-            })
-            .catch( err => {
-
-                console.log('Unable to fetch posts');
-                console.log(err);
-            
-            })
-            .finally(() => {
-                this.postLoading = false
-            })
+        this.$store.dispatch('fetchUser',this.$route.params.userId)
+        this.$store.dispatch('fetchUserPosts',this.$route.params.userId)
     }
 }
 </script>

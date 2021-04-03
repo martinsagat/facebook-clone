@@ -1861,6 +1861,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -1872,6 +1873,11 @@ __webpack_require__.r(__webpack_exports__);
   watch: {
     $route: function $route(to, from) {
       this.$store.dispatch('setPageTitle', to.meta.title);
+    }
+  },
+  computed: {
+    authUser: function authUser() {
+      return this.$store.getters.authUser;
     }
   },
   mounted: function mounted() {
@@ -1895,6 +1901,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -1972,8 +1985,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: "NewPost"
+  name: "NewPost",
+  computed: {
+    authUser: function authUser() {
+      return this.$store.getters.authUser;
+    }
+  }
 });
 
 /***/ }),
@@ -2087,6 +2107,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -2153,39 +2174,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'Show',
   components: {
     Post: _components_Post__WEBPACK_IMPORTED_MODULE_0__.default
   },
-  data: function data() {
-    return {
-      userLoading: true,
-      postLoading: true,
-      user: null,
-      posts: null
-    };
+  computed: {
+    user: function user() {
+      return this.$store.getters.user;
+    },
+    posts: function posts() {
+      return this.$store.getters.posts;
+    },
+    status: function status() {
+      return this.$store.getters.status;
+    },
+    friendButtonText: function friendButtonText() {
+      return this.$store.getters.friendButtonText;
+    }
   },
   mounted: function mounted() {
-    var _this = this;
-
-    axios.get('/api/users/' + this.$route.params.userId).then(function (res) {
-      _this.user = res.data;
-    })["catch"](function (err) {
-      console.log('Unable to fetch the user from the server.');
-      console.log(err);
-    })["finally"](function () {
-      _this.userLoading = false;
-    });
-    axios.get('/api/users/' + this.$route.params.userId + '/posts').then(function (res) {
-      _this.posts = res.data;
-    })["catch"](function (err) {
-      console.log('Unable to fetch posts');
-      console.log(err);
-    })["finally"](function () {
-      _this.postLoading = false;
-    });
+    this.$store.dispatch('fetchUser', this.$route.params.userId);
+    this.$store.dispatch('fetchUserPosts', this.$route.params.userId);
   }
 });
 
@@ -2317,21 +2344,162 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _modules_User__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/User */ "./resources/js/store/modules/User.js");
 /* harmony import */ var _modules_Title__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/Title */ "./resources/js/store/modules/Title.js");
+/* harmony import */ var _modules_Profile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/Profile */ "./resources/js/store/modules/Profile.js");
 
 
 
 
-vue__WEBPACK_IMPORTED_MODULE_2__.default.use(vuex__WEBPACK_IMPORTED_MODULE_3__.default);
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new vuex__WEBPACK_IMPORTED_MODULE_3__.default.Store({
+
+vue__WEBPACK_IMPORTED_MODULE_3__.default.use(vuex__WEBPACK_IMPORTED_MODULE_4__.default);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new vuex__WEBPACK_IMPORTED_MODULE_4__.default.Store({
   modules: {
-    Users: _modules_User__WEBPACK_IMPORTED_MODULE_0__.default,
-    Title: _modules_Title__WEBPACK_IMPORTED_MODULE_1__.default
+    User: _modules_User__WEBPACK_IMPORTED_MODULE_0__.default,
+    Title: _modules_Title__WEBPACK_IMPORTED_MODULE_1__.default,
+    Profile: _modules_Profile__WEBPACK_IMPORTED_MODULE_2__.default
   }
 }));
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/Profile.js":
+/*!***********************************************!*\
+  !*** ./resources/js/store/modules/Profile.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var state = {
+  user: null,
+  userStatus: null,
+  posts: null,
+  postsStatus: null
+};
+var getters = {
+  user: function user(state) {
+    return state.user;
+  },
+  posts: function posts(state) {
+    return state.posts;
+  },
+  status: function status(state) {
+    return {
+      user: state.userStatus,
+      posts: state.postsStatus
+    };
+  },
+  friendship: function friendship(state) {
+    return state.user.data.attributes.friendship;
+  },
+  friendButtonText: function friendButtonText(state, getters, rootState) {
+    if (rootState.User.user.data.user_id === state.user.data.user_id) {
+      return '';
+    }
+
+    if (getters.friendship === null) {
+      return 'Add Friend';
+    } else if (getters.friendship.data.attributes.confirmed_at === null && getters.friendship.data.attributes.friend_id !== rootState.User.user.data.user_id) {
+      return 'Pending Friend Request';
+    } else if (getters.friendship.data.attributes.confirmed_at !== null) {
+      return '';
+    }
+
+    return 'Accept';
+  }
+};
+var actions = {
+  fetchUser: function fetchUser(_ref, userId) {
+    var _this = this;
+
+    var commit = _ref.commit,
+        dispatch = _ref.dispatch;
+    commit('setUserStatus', 'loading');
+    axios.get('/api/users/' + userId).then(function (res) {
+      commit('setUser', res.data);
+      commit('setUserStatus', 'success');
+    })["catch"](function (err) {
+      commit('setUserStatus', 'error');
+    })["finally"](function () {
+      _this.userLoading = false;
+    });
+  },
+  fetchUserPosts: function fetchUserPosts(_ref2, userId) {
+    var commit = _ref2.commit,
+        dispatch = _ref2.dispatch;
+    commit('setPostsStatus', 'loading');
+    axios.get('/api/users/' + userId + '/posts').then(function (res) {
+      commit('setPosts', res.data);
+      commit('setPostsStatus', 'success');
+    })["catch"](function (error) {
+      commit('setPostsStatus', 'error');
+    });
+  },
+  sendFriendRequest: function sendFriendRequest(_ref3, friendId) {
+    var commit = _ref3.commit,
+        getters = _ref3.getters;
+
+    if (getters.friendButtonText !== 'Add Friend') {
+      return;
+    }
+
+    axios.post('/api/friend-request', {
+      'friend_id': friendId
+    }).then(function (res) {
+      commit('setUserFriendship', res.data);
+    })["catch"](function (err) {});
+  },
+  acceptFriendRequest: function acceptFriendRequest(_ref4, userId) {
+    var commit = _ref4.commit,
+        state = _ref4.state;
+    axios.post('/api/friend-request-response', {
+      'user_id': userId,
+      'status': 1
+    }).then(function (res) {
+      commit('setUserFriendship', res.data);
+    })["catch"](function (err) {});
+  },
+  ignoreFriendRequest: function ignoreFriendRequest(_ref5, userId) {
+    var commit = _ref5.commit,
+        state = _ref5.state;
+    axios["delete"]('/api/friend-request-response/delete', {
+      data: {
+        'user_id': userId
+      }
+    }).then(function (res) {
+      commit('setUserFriendship', null);
+    })["catch"](function (err) {});
+  }
+};
+var mutations = {
+  setUser: function setUser(state, user) {
+    state.user = user;
+  },
+  setUserStatus: function setUserStatus(state, status) {
+    state.userStatus = status;
+  },
+  setUserFriendship: function setUserFriendship(state, friendship) {
+    state.user.data.attributes.friendship = friendship;
+  },
+  setPostsStatus: function setPostsStatus(state, status) {
+    state.postsStatus = status;
+  },
+  setPosts: function setPosts(state, posts) {
+    state.posts = posts;
+  }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  state: state,
+  getters: getters,
+  actions: actions,
+  mutations: mutations
+});
 
 /***/ }),
 
@@ -38325,30 +38493,32 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "flex flex-col flex-1 h-screen overflow-y-hidden" },
-    [
-      _c("Nav"),
-      _vm._v(" "),
-      _c(
+  return _vm.authUser
+    ? _c(
         "div",
-        { staticClass: "flex overflow-y-hidden flex-1" },
+        { staticClass: "flex flex-col flex-1 h-screen overflow-y-hidden" },
         [
-          _c("Sidebar"),
+          _c("Nav"),
           _vm._v(" "),
           _c(
             "div",
-            { staticClass: "overflow-x-hidden w-2/3" },
-            [_c("router-view")],
+            { staticClass: "flex overflow-y-hidden flex-1" },
+            [
+              _c("Sidebar", { staticClass: "hidden sm:block" }),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "overflow-x-hidden w-full sm:w-2/3" },
+                [_c("router-view", { key: _vm.$route.fullPath })],
+                1
+              )
+            ],
             1
           )
         ],
         1
       )
-    ],
-    1
-  )
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -38380,7 +38550,7 @@ var render = function() {
         "bg-white h-12 px-4 flex items-center border-b border-gray-400 shadow-sm"
     },
     [
-      _c("div", { staticClass: "w-1/3" }, [
+      _c("div", { staticClass: "md:block w-full md:w-1/3" }, [
         _c(
           "div",
           { staticClass: "flex" },
@@ -38445,7 +38615,10 @@ var render = function() {
       _vm._v(" "),
       _c(
         "div",
-        { staticClass: "w-1/3 flex justify-center items-center h-full" },
+        {
+          staticClass:
+            "invisible md:visible md:w-1/3 flex justify-center items-center h-full"
+        },
         [
           _c(
             "router-link",
@@ -38527,23 +38700,32 @@ var render = function() {
         1
       ),
       _vm._v(" "),
-      _c("div", { staticClass: "w-1/3 flex justify-end" }, [
-        _c(
-          "svg",
-          {
-            staticClass: "fill-current w-5 h-5",
-            attrs: { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24" }
-          },
-          [
-            _c("path", {
+      _c(
+        "div",
+        {
+          staticClass: "invisible md:visible md:w-1/3 md:w-1/3 flex justify-end"
+        },
+        [
+          _c(
+            "svg",
+            {
+              staticClass: "fill-current w-5 h-5",
               attrs: {
-                d:
-                  "M22.9 10.1c-.1-.1-.2-.2-.3-.2L20 9.5c-.1-.5-.3-.9-.6-1.4.2-.2.4-.6.8-1 .3-.4.6-.8.7-1 .1 0 .1-.2.1-.3 0-.1 0-.2-.1-.3-.3-.5-1.1-1.3-2.4-2.4-.1-.1-.2-.1-.4-.1-.1 0-.3 0-.3.1l-2 1.5c-.4-.2-.8-.4-1.3-.5l-.4-2.6c0-.1-.1-.2-.2-.3-.1-.2-.2-.2-.3-.2h-3.2c-.3 0-.4.1-.5.4-.1.5-.3 1.4-.4 2.7-.5.1-.9.3-1.3.5l-2-1.5c-.1-.1-.3-.2-.4-.2-.2 0-.7.3-1.4 1-.6.7-1.1 1.3-1.4 1.6-.1.1-.1.2-.1.3 0 .1 0 .2.1.3.6.8 1.2 1.4 1.5 2-.2.5-.3.9-.5 1.4l-2.6.4c-.1 0-.2.1-.3.2-.1.1-.1.2-.1.3v3.2c0 .1 0 .2.1.3.1.1.2.2.3.2l2.6.4c.1.5.3.9.6 1.4-.2.2-.4.6-.8 1-.3.4-.6.8-.7 1-.1.1-.1.2-.1.3 0 .1 0 .2.1.3.4.5 1.2 1.3 2.4 2.4.1.1.2.2.4.2.1 0 .3 0 .4-.1l2-1.5c.3.1.7.3 1.2.5l.4 2.6c0 .1.1.2.2.3.1.1.2.1.4.1h3.2c.3 0 .4-.1.5-.4.1-.5.3-1.4.4-2.7.4-.1.9-.3 1.3-.5l2 1.5c.1.1.3.1.4.1.2 0 .7-.3 1.3-1 .7-.7 1.2-1.2 1.4-1.5.1-.1.1-.2.1-.3 0-.1 0-.2-.1-.4-.7-.8-1.2-1.5-1.5-2 .2-.4.4-.8.6-1.3l2.7-.4c.1 0 .2-.1.3-.2.1-.1.1-.2.1-.3v-3.2c-.2-.1-.2-.2-.3-.3zm-8.3 4.5c-.7.7-1.6 1.1-2.6 1.1s-1.9-.4-2.6-1.1c-.7-.7-1.1-1.6-1.1-2.6s.4-1.9 1.1-2.6c.7-.7 1.6-1.1 2.6-1.1s1.9.4 2.6 1.1c.7.7 1.1 1.6 1.1 2.6s-.4 1.9-1.1 2.6z"
+                xmlns: "http://www.w3.org/2000/svg",
+                viewBox: "0 0 24 24"
               }
-            })
-          ]
-        )
-      ])
+            },
+            [
+              _c("path", {
+                attrs: {
+                  d:
+                    "M22.9 10.1c-.1-.1-.2-.2-.3-.2L20 9.5c-.1-.5-.3-.9-.6-1.4.2-.2.4-.6.8-1 .3-.4.6-.8.7-1 .1 0 .1-.2.1-.3 0-.1 0-.2-.1-.3-.3-.5-1.1-1.3-2.4-2.4-.1-.1-.2-.1-.4-.1-.1 0-.3 0-.3.1l-2 1.5c-.4-.2-.8-.4-1.3-.5l-.4-2.6c0-.1-.1-.2-.2-.3-.1-.2-.2-.2-.3-.2h-3.2c-.3 0-.4.1-.5.4-.1.5-.3 1.4-.4 2.7-.5.1-.9.3-1.3.5l-2-1.5c-.1-.1-.3-.2-.4-.2-.2 0-.7.3-1.4 1-.6.7-1.1 1.3-1.4 1.6-.1.1-.1.2-.1.3 0 .1 0 .2.1.3.6.8 1.2 1.4 1.5 2-.2.5-.3.9-.5 1.4l-2.6.4c-.1 0-.2.1-.3.2-.1.1-.1.2-.1.3v3.2c0 .1 0 .2.1.3.1.1.2.2.3.2l2.6.4c.1.5.3.9.6 1.4-.2.2-.4.6-.8 1-.3.4-.6.8-.7 1-.1.1-.1.2-.1.3 0 .1 0 .2.1.3.4.5 1.2 1.3 2.4 2.4.1.1.2.2.4.2.1 0 .3 0 .4-.1l2-1.5c.3.1.7.3 1.2.5l.4 2.6c0 .1.1.2.2.3.1.1.2.1.4.1h3.2c.3 0 .4-.1.5-.4.1-.5.3-1.4.4-2.7.4-.1.9-.3 1.3-.5l2 1.5c.1.1.3.1.4.1.2 0 .7-.3 1.3-1 .7-.7 1.2-1.2 1.4-1.5.1-.1.1-.2.1-.3 0-.1 0-.2-.1-.4-.7-.8-1.2-1.5-1.5-2 .2-.4.4-.8.6-1.3l2.7-.4c.1 0 .2-.1.3-.2.1-.1.1-.2.1-.3v-3.2c-.2-.1-.2-.2-.3-.3zm-8.3 4.5c-.7.7-1.6 1.1-2.6 1.1s-1.9-.4-2.6-1.1c-.7-.7-1.1-1.6-1.1-2.6s.4-1.9 1.1-2.6c.7-.7 1.6-1.1 2.6-1.1s1.9.4 2.6 1.1c.7.7 1.1 1.6 1.1 2.6s-.4 1.9-1.1 2.6z"
+                }
+              })
+            ]
+          )
+        ]
+      )
     ]
   )
 }
@@ -38570,62 +38752,71 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "bg-white rounded shadow w-2/3 p-4 " }, [
-    _c("div", { staticClass: "flex justify-between items-center" }, [
-      _vm._m(0),
-      _vm._v(" "),
-      _vm._m(1),
-      _vm._v(" "),
-      _c("div", [
-        _c(
-          "button",
-          {
-            staticClass:
-              "flex justify-center items-center rounded-full w-10 h-10 bg-gray-200"
-          },
-          [
-            _c(
-              "svg",
-              {
-                staticClass: "fill-current w-5 h-5",
-                attrs: {
-                  xmlns: "http://www.w3.org/2000/svg",
-                  viewBox: "0 0 24 24"
-                }
-              },
-              [
-                _c("path", {
+  return _c(
+    "div",
+    { staticClass: "bg-white rounded shadow w-11/12 x-1 sm:w-2/3 p-4 " },
+    [
+      _c("div", { staticClass: "flex justify-between items-center" }, [
+        _c("div", [
+          _c(
+            "div",
+            { staticClass: "w-8" },
+            [
+              _c(
+                "router-link",
+                { attrs: { to: "/users/" + _vm.authUser.data.user_id } },
+                [
+                  _c("img", {
+                    staticClass: "w-8 h-8 object-cover rounded-full",
+                    attrs: {
+                      src:
+                        "https://cdn.pixabay.com/photo/2014/07/09/10/04/man-388104_960_720.jpg",
+                      alt: "profile image for user"
+                    }
+                  })
+                ]
+              )
+            ],
+            1
+          )
+        ]),
+        _vm._v(" "),
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", [
+          _c(
+            "button",
+            {
+              staticClass:
+                "flex justify-center items-center rounded-full w-10 h-10 bg-gray-200"
+            },
+            [
+              _c(
+                "svg",
+                {
+                  staticClass: "fill-current w-5 h-5",
                   attrs: {
-                    d:
-                      "M21.8 4H2.2c-.2 0-.3.2-.3.3v15.3c0 .3.1.4.3.4h19.6c.2 0 .3-.1.3-.3V4.3c0-.1-.1-.3-.3-.3zm-1.6 13.4l-4.4-4.6c0-.1-.1-.1-.2 0l-3.1 2.7-3.9-4.8h-.1s-.1 0-.1.1L3.8 17V6h16.4v11.4zm-4.9-6.8c.9 0 1.6-.7 1.6-1.6 0-.9-.7-1.6-1.6-1.6-.9 0-1.6.7-1.6 1.6.1.9.8 1.6 1.6 1.6z"
+                    xmlns: "http://www.w3.org/2000/svg",
+                    viewBox: "0 0 24 24"
                   }
-                })
-              ]
-            )
-          ]
-        )
+                },
+                [
+                  _c("path", {
+                    attrs: {
+                      d:
+                        "M21.8 4H2.2c-.2 0-.3.2-.3.3v15.3c0 .3.1.4.3.4h19.6c.2 0 .3-.1.3-.3V4.3c0-.1-.1-.3-.3-.3zm-1.6 13.4l-4.4-4.6c0-.1-.1-.1-.2 0l-3.1 2.7-3.9-4.8h-.1s-.1 0-.1.1L3.8 17V6h16.4v11.4zm-4.9-6.8c.9 0 1.6-.7 1.6-1.6 0-.9-.7-1.6-1.6-1.6-.9 0-1.6.7-1.6 1.6.1.9.8 1.6 1.6 1.6z"
+                    }
+                  })
+                ]
+              )
+            ]
+          )
+        ])
       ])
-    ])
-  ])
+    ]
+  )
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", [
-      _c("div", { staticClass: "w-8" }, [
-        _c("img", {
-          staticClass: "w-8 h-8 object-cover rounded-full",
-          attrs: {
-            src:
-              "https://cdn.pixabay.com/photo/2014/07/09/10/04/man-388104_960_720.jpg",
-            alt: "profile image for user"
-          }
-        })
-      ])
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -38915,41 +39106,113 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "flex flex-col items-center" },
-    [
-      _c("div", { staticClass: "relative mb-8" }, [
-        _vm._m(0),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass:
-              "absolute flex items-center bottom-0 left-0 -mb-8 ml-12 z-20"
-          },
-          [
-            _vm._m(1),
+  return _vm.status.user === "success" && _vm.user
+    ? _c(
+        "div",
+        { staticClass: "flex flex-col items-center" },
+        [
+          _c("div", { staticClass: "relative mb-8" }, [
+            _vm._m(0),
             _vm._v(" "),
-            _c("p", { staticClass: "text-2xl text-gray-100 ml-4" }, [
-              _vm._v(_vm._s(_vm.user.data.attributes.name))
-            ])
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _vm.postLoading
-        ? _c("p", [_vm._v("Loading Posts...")])
-        : _vm._l(_vm.posts.data, function(post) {
-            return _c("Post", { key: post.data.post_id, attrs: { post: post } })
-          }),
-      _vm._v(" "),
-      !_vm.postLoading && _vm.posts.data.length < 1
-        ? _c("p", [_vm._v("No posts found. Get Started..")])
-        : _vm._e()
-    ],
-    2
-  )
+            _c(
+              "div",
+              {
+                staticClass:
+                  "absolute flex items-center bottom-0 left-0 -mb-8 ml-12 z-20"
+              },
+              [
+                _vm._m(1),
+                _vm._v(" "),
+                _c("p", { staticClass: "text-2xl text-gray-100 ml-4" }, [
+                  _vm._v(_vm._s(_vm.user.data.attributes.name))
+                ])
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass:
+                  "absolute flex items-center bottom-0 right-0 mb-4 mr-12 z-20"
+              },
+              [
+                _vm.friendButtonText && _vm.friendButtonText !== "Accept"
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "py-1 px-3 bg-gray-400 rounded",
+                        on: {
+                          click: function($event) {
+                            return _vm.$store.dispatch(
+                              "sendFriendRequest",
+                              _vm.$route.params.userId
+                            )
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                " +
+                            _vm._s(_vm.friendButtonText) +
+                            "\n            "
+                        )
+                      ]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.friendButtonText && _vm.friendButtonText === "Accept"
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "mr-2 py-1 px-3 bg-blue-500 rounded",
+                        on: {
+                          click: function($event) {
+                            return _vm.$store.dispatch(
+                              "acceptFriendRequest",
+                              _vm.$route.params.userId
+                            )
+                          }
+                        }
+                      },
+                      [_vm._v("\n                Accept\n            ")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.friendButtonText && _vm.friendButtonText === "Accept"
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "py-1 px-3 bg-gray-400 rounded",
+                        on: {
+                          click: function($event) {
+                            return _vm.$store.dispatch(
+                              "ignoreFriendRequest",
+                              _vm.$route.params.userId
+                            )
+                          }
+                        }
+                      },
+                      [_vm._v("\n                Ignore\n            ")]
+                    )
+                  : _vm._e()
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _vm.status.posts === "loading"
+            ? _c("div", [_vm._v("Loading Posts...")])
+            : _vm.posts.data.length < 1
+            ? _c("div", [_vm._v("No posts found. Get Started..")])
+            : _vm._l(_vm.posts.data, function(post) {
+                return _c("Post", {
+                  key: post.data.post_id,
+                  attrs: { post: post }
+                })
+              })
+        ],
+        2
+      )
+    : _vm._e()
 }
 var staticRenderFns = [
   function() {
