@@ -4,7 +4,7 @@
         <NewPost />
 
         <p v-if="newsStatus.postsStatus === 'loading'">Loading Posts...</p>
-        <Post v-else v-for="post in posts.data" :post="post" :key="post.data.post_id" />
+        <Post v-else v-for="(post, postKey) in posts.data" :post="post" :key="postKey" />
 
     </div>
 </template>

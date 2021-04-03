@@ -1,11 +1,11 @@
 <template>
     <div class="flex flex-col flex-1 h-screen overflow-y-hidden" v-if="authUser">
         <Nav />
-
+          
         <div class="flex overflow-y-hidden flex-1">
 
-            <Sidebar class="hidden sm:block" />
-
+            <Sidebar class="hidden sm:block transform sm:transform-gpu " />
+            
             <div class="overflow-x-hidden w-full sm:w-2/3">
                 <router-view :key="$route.fullPath"></router-view>
             </div>
